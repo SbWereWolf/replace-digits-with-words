@@ -7,7 +7,6 @@ use SbWereWolf\Scripting\Config\EnvReader;
 use SbWereWolf\Scripting\Convert\NanosecondsConverter;
 use SbWereWolf\Scripting\FileSystem\Path;
 use SbWereWolf\Substitution\Carrier;
-use SbWereWolf\Substitution\WordFabric;
 
 $message = date(DATE_ATOM) . ': Script is starting';
 echo $message . PHP_EOL;
@@ -40,6 +39,9 @@ $logger->pushProcessor(function ($record) {
 
 $logger->notice($message);
 
+$message = 'Import starting';
+$logger->notice($message);
+
 $configPath = $pathComposer->make(['.env']);
 (new EnvReader($configPath))->defineConstants();
 
@@ -49,8 +51,13 @@ $db = (new PDO(
     constant('PASSWORD'),
 ));
 
-
-$message = 'Import starting';
+$message = 'Use DSN `'
+    . constant('DSN')
+    . '`, login `'
+    . constant('LOGIN')
+    . '`, password `'
+    . constant('PASSWORD')
+    . '`';
 $logger->notice($message);
 
 $start = hrtime(true);
