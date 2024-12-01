@@ -1,7 +1,23 @@
 {
+  "name": "sbwerewolf/numbers-to-words-substitution",
+  "description": "Some game algorithm for win",
+  "type": "utilite",
+  "license": "GPL",
+  "authors": [
+    {
+      "name": "SbWereWolf",
+      "email": "ulfnew@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "": "src/"
+    }
+  },
   "require": {
     "sbwerewolf/batch-file-scripting": "^3.0",
     "ext-pdo": "*",
-    "monolog/monolog": "^3.8"
+    "monolog/monolog": "^3.8",
+    "ext-mbstring": "*"
   }
 }
