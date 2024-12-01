@@ -6,6 +6,7 @@ use Monolog\LogRecord;
 use SbWereWolf\Scripting\Config\EnvReader;
 use SbWereWolf\Scripting\Convert\NanosecondsConverter;
 use SbWereWolf\Scripting\FileSystem\Path;
+use SbWereWolf\Substitution\Carrier;
 use SbWereWolf\Substitution\WordFabric;
 
 $message = date(DATE_ATOM) . ': Script is starting';
@@ -72,65 +73,11 @@ $eol = str_replace(
 );
 $words = explode($eol, $wordsString);
 
-$query = $db->prepare(
-    '
-INSERT INTO translation ( original, symbols, digits, length, number)
-VALUES(:original,:symbols,:digits,:length,:number)
-'
-);
-
-$original = '';
-$symbols = '';
-$length = 0;
-$digits = '';
-$number = 0;
-$query->bindParam(':original', $original, PDO::PARAM_STR);
-$query->bindParam(':symbols', $symbols, PDO::PARAM_STR);
-$query->bindParam(':digits', $digits, PDO::PARAM_STR);
-$query->bindParam(':length', $length, PDO::PARAM_INT);
-$query->bindParam(':number', $number, PDO::PARAM_INT);
-
-$rowsRead = 0;
-$rowsInserted = 0;
-$db->beginTransaction();
-foreach ($words as $word) {
-    if ($word !== '') {
-        $message = "Prepare `$word`";
-        $logger->notice($message);
-
-        $rowsRead++;
-        $prepared = (new WordFabric($word))->make();
-
-        $original = $prepared->original();
-        $symbols = $prepared->symbols();
-        $length = $prepared->length();
-        $digits = $prepared->digits();
-        $number = $prepared->number();
-
-        $isSuccess = $query->execute();
-        if ($isSuccess) {
-            $rowsInserted++;
-        }
-
-        $message =
-            "`{$original}` `{$symbols}` `{$length}`"
-            . " `{$digits}` `{$digits}`";
-        $logger->notice($message);
-    }
+$importer = new Carrier($db, $words);
+foreach ($importer->unload() as $message) {
+    $logger->notice($message);
 }
-$db->commit();
 
-
-$read = number_format($rowsRead, 0, ',', ' ');
-$inserted = number_format($rowsInserted, 0, ',', ' ');
-$scriptMaxMem =
-    round(memory_get_peak_usage(true) / 1024 / 1024, 1);
-
-$message =
-    "Rows read `$read`," .
-    "Rows inserted `$inserted`," .
-    " max mem allocated is `$scriptMaxMem`Mb";
-$logger->notice($message);
 
 $finishMoment = hrtime(true);
 
