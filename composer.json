@@ -1,0 +1,7 @@
+{
+  "require": {
+    "sbwerewolf/batch-file-scripting": "^3.0",
+    "ext-pdo": "*",
+    "monolog/monolog": "^3.8"
+  }
+}
