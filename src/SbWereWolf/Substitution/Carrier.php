@@ -15,6 +15,8 @@ class Carrier
 
     public function unload()
     {
+        $this->db->exec('DELETE FROM translation');
+
         $query = $this->db->prepare(
             '
 INSERT INTO translation ( original, symbols, digits, length, number)
