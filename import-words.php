@@ -73,11 +73,14 @@ $eol = str_replace(
 );
 $words = explode($eol, $wordsString);
 
+$db->beginTransaction();
+
 $importer = new Carrier($db, $words);
 foreach ($importer->unload() as $message) {
     $logger->notice($message);
 }
 
+$db->commit();
 
 $finishMoment = hrtime(true);
 

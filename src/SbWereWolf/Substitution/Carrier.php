@@ -33,8 +33,6 @@ VALUES(:original,:symbols,:digits,:length,:number)
         $query->bindParam(':length', $length, PDO::PARAM_INT);
         $query->bindParam(':number', $number, PDO::PARAM_INT);
 
-        $this->db->beginTransaction();
-
         $rowsRead = 0;
         $rowsInserted = 0;
         foreach ($this->words as $word) {
@@ -63,8 +61,6 @@ VALUES(:original,:symbols,:digits,:length,:number)
                 yield $message;
             }
         }
-
-        $this->db->commit();
 
         $read = number_format($rowsRead, 0, ',', ' ');
         $inserted = number_format($rowsInserted, 0, ',', ' ');
